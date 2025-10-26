@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>bn8004.fun | X402协议 代币发行平台</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+    <meta name="theme-color" content="#F0B90B" />
+    <link rel="stylesheet" href="x8004-styles.css" />
+    <script>
+      function copyContract() {
+        const address = "0xAbd0c33d4A624E695BB41Ab003021CB30Be80e37";
+        navigator.clipboard
+          .writeText(address)
+          .then(() => {
+            const btn = event.target;
+            const originalText = btn.textContent;
+            btn.textContent = "✓";
+            btn.style.color = "#00ff88";
+            setTimeout(() => {
+              btn.textContent = originalText;
+              btn.style.color = "";
+            }, 2000);
+          })
+          .catch((err) => {
+            console.error("复制失败:", err);
+          });
+      }
+    </script>
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="site-header">
+      <div class="container">
+        <div class="nav-brand">
+          <!-- Removed logo image as requested -->
+        </div>
+
+        <!-- Removed navigation menu as requested -->
+
+        <div class="nav-actions">
+          <button id="connectButton" class="connect-btn">
+            <span class="btn-text">连接钱包</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero-section">
+      <div class="container">
+        <div class="hero-content">
+          <div class="hero-left">
+            <h1 class="hero-title">
+              BSC链上首个 <span class="highlight">X402协议</span><br />
+              代币 - BN8004
+            </h1>
+            <p class="hero-subtitle">
+              基于Base链X402协议的升级版本，现正式登陆BSC链！更快速度，更强兼容性。
+            </p>
+            <div class="hero-stats">
+              <div class="stat-item">
+                <div class="stat-value">1:8004</div>
+                <div class="stat-label">USDT 比率</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value">BSC</div>
+                <div class="stat-label">网络</div>
+              </div>
+            </div>
+          </div>
+          <div class="hero-right">
+            <div class="hero-visual">
+              <div class="token-card">
+                <div class="token-header">
+                  <div class="token-logo">
+                    <!-- Removed logo image as requested -->
+                  </div>
+                  <div class="token-info">
+                    <div class="token-name">BN8004 代币</div>
+                    <div class="token-symbol">BN8004</div>
+                  </div>
+                  <div class="protocol-badge">X402协议</div>
+                </div>
+                <div class="token-stats">
+                  <div class="stat-row">
+                    <span>协议:</span>
+                    <span class="value">X402</span>
+                  </div>
+                  <div class="stat-row">
+                    <span>合约:</span>
+                    <div style="display: flex; align-items: center; gap: 8px">
+                      <span
+                        class="address"
+                        id="contractAddress"
+                        style="font-size: 12px"
+                        >0xAbd0c33d4A624E695BB41Ab003021CB30Be80e37</span
+                      >
+                      <button
+                        onclick="copyContract()"
+                        class="copy-btn"
+                        title="复制地址"
+                      >
+                        📋
+                      </button>
+                    </div>
+                  </div>
+                  <div class="stat-row">
+                    <span>兑换比率:</span>
+                    <span class="value">1 USDT = 8004 BN8004</span>
+                  </div>
+                  <div class="progress-section">
+                    <div class="progress-header">
+                      <span>发行进度</span>
+                      <span class="progress-percent">进行中</span>
+                    </div>
+                    <div class="progress-bar">
+                      <div class="progress-fill" style="width: 100%"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Trade -->
+    <main class="main-content">
+      <div class="container">
+        <div class="trading-section">
+          <div class="section-header">
+            <h2>使用X402协议铸造BN8004</h2>
+            <div class="network-indicator">
+              <div class="network-dot"></div>
+              <span>BSC主网</span>
+            </div>
+          </div>
+
+          <div class="trading-card">
+            <div class="trading-header">
+              <div class="token-display">
+                <div class="token-icon">
+                  <!-- Removed logo image as requested -->
+                </div>
+                <div class="token-details">
+                  <div class="token-name">BN8004</div>
+                  <div class="token-desc">X402协议 代币</div>
+                </div>
+              </div>
+              <div class="price-info">
+                <div class="current-price">1 USDT = 8004 BN8004</div>
+                <div class="price-change positive"></div>
+              </div>
+            </div>
+
+            <div id="message"></div>
+
+            <!-- Wallet Info -->
+            <div class="wallet-info-section">
+              <div class="info-card">
+                <div class="info-label">钱包地址</div>
+                <div class="info-value" id="walletAddress">未连接</div>
+              </div>
+              <div class="info-card">
+                <div class="info-label">USDT余额</div>
+                <div class="info-value" id="usdtBalance">-</div>
+              </div>
+              <div class="info-card">
+                <div class="info-label">BN8004余额</div>
+                <div class="info-value" id="tokenBalance">-</div>
+              </div>
+            </div>
+
+            <!-- Mint Section -->
+            <div id="mintSection" style="display: none">
+              <div class="mint-info-box">
+                <div class="info-row">
+                  <span>支付:</span>
+                  <span class="highlight-value">1 USDT</span>
+                </div>
+                <div class="info-row">
+                  <span>获得:</span>
+                  <span class="highlight-value">1 BN8004</span>
+                </div>
+              </div>
+
+              <div class="action-buttons">
+                <button
+                  id="approveBtn"
+                  class="action-btn secondary-btn"
+                  onclick="approveUSDC()"
+                  disabled
+                >
+                  <span id="approveText">步骤1: 授权USDT</span>
+                </button>
+                <button
+                  id="mintBtn"
+                  class="action-btn primary-btn"
+                  onclick="mintTokens()"
+                  disabled
+                >
+                  <span id="mintText">步骤2: 铸造</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="trading-info">
+              <div class="info-item">
+                <span class="info-label">协议:</span>
+                <span class="info-value">X402</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">网络:</span>
+                <span class="info-value">BSC主网</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Project Info Section -->
+          <div class="protocol-info">
+            <h3>项目简介</h3>
+            <p>
+              BSC首个x8004协议 - BN8004<br>
+              基于 Base 链 X402 协议 的升级版本，现正式登陆 BSC 链！
+            </p>
+            <p>
+              更快速度，更强兼容性。<br>
+              保留X402核心逻辑，升级安全与流动性机制。<br>
+              团队将放弃权限、锁定池子，保障公平公正。<br>
+              原Base链x800持币用户将获得1%空投。<br>
+              一切以链上数据为准，<br>
+              BN8004——为信任与透明而生。
+            </p>
+            
+            <h3 style="margin-top: 30px;">关于X402协议</h3>
+            <p>
+              X402协议是一项革命性的元交易协议，可实现便捷的代币操作。用户只需签署交易，中继器会处理链上执行。
+            </p>
+            <div class="protocol-features">
+              <div class="feature-item">
+                <div class="feature-icon">⚡</div>
+                <div class="feature-content">
+                  <div class="feature-title">便捷铸造</div>
+                  <div class="feature-desc">简化操作流程</div>
+                </div>
+              </div>
+              <div class="feature-item">
+                <div class="feature-icon">🔒</div>
+                <div class="feature-content">
+                  <div class="feature-title">安全且去中心化</div>
+                  <div class="feature-desc">非托管架构</div>
+                </div>
+              </div>
+              <div class="feature-item">
+                <div class="feature-icon">🚀</div>
+                <div class="feature-content">
+                  <div class="feature-title">即时执行</div>
+                  <div class="feature-desc">快速交易处理</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script src="x8004-app.js"></script>
+  </body>
+</html>
