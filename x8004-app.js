@@ -153,8 +153,9 @@
           "function balanceOf(address) view returns (uint256)",
           "function name() view returns (string)",
           "function symbol() view returns (string)",
+          "function mint() returns (bool)" // 添加mint函数ABI
         ],
-        provider
+        signer // 使用signer而不是provider以便可以发送交易
       );
 
       forwarderContract = new ethers.Contract(
@@ -278,10 +279,10 @@
     }
   };
 
-  // 铸造代币
+  // 铸造代币 - 直接调用合约而不是使用中继器
   window.mintTokens = async function () {
     try {
-      console.log("🚀 开始铸造过程...");
+      console.log("🚀 开始直接铸造过程...");
 
       if (!isApproved) {
         showMessage("请先授权USDT", "error");
@@ -289,87 +290,25 @@
       }
 
       showLoading("mintBtn", "铸造中...");
-      showMessage("准备X8004元交易...", "info");
+      showMessage("正在发送铸造交易...", "info");
 
       console.log("📝 配置:", {
-        TOKEN_ADDRESS: CONFIG.TOKEN_ADDRESS,
-        FORWARDER_ADDRESS: CONFIG.FORWARDER_ADDRESS,
-        RELAYER_URL: CONFIG.RELAYER_URL,
+        TOKEN_ADDRESS: CONFIG.TOKEN_ADDRESS
       });
 
-      // 准备铸造调用数据
-      const tokenInterface = new ethers.utils.Interface(["function mint()"]);
-      const mintData = tokenInterface.encodeFunctionData("mint", []);
+      // 直接调用合约的mint函数
+      console.log("📤 调用合约mint函数...");
+      const tx = await tokenContract.mint();
+      
+      showMessage("交易已提交，等待确认...", "info");
+      console.log("📥 交易哈希:", tx.hash);
+      
+      // 等待交易确认
+      const receipt = await tx.wait();
+      console.log("✅ 交易确认:", receipt);
 
-      // 获取nonce
-      console.log("🔢 获取nonce...");
-      const nonce = await forwarderContract.getNonce(userAddress);
-      console.log("✓ Nonce:", nonce.toString());
-
-      const deadline = Math.floor(Date.now() / 1000) + 3600;
-
-      const forwardRequest = {
-        from: userAddress,
-        to: CONFIG.TOKEN_ADDRESS,
-        value: 0,
-        gas: 300000,
-        nonce: nonce.toNumber(),
-        deadline: deadline,
-        data: mintData,
-      };
-
-      console.log("📄 转发请求:", forwardRequest);
-
-      // EIP-712签名
-      const domain = {
-        name: "MinimalForwarder",
-        version: "1.0.0",
-        chainId: CONFIG.CHAIN_ID,
-        verifyingContract: CONFIG.FORWARDER_ADDRESS,
-      };
-
-      const types = {
-        ForwardRequest: [
-          { name: "from", type: "address" },
-          { name: "to", type: "address" },
-          { name: "value", type: "uint256" },
-          { name: "gas", type: "uint256" },
-          { name: "nonce", type: "uint256" },
-          { name: "deadline", type: "uint256" },
-          { name: "data", type: "bytes" },
-        ],
-      };
-
-      showMessage("请在钱包中签名...", "info");
-      console.log("✍️ 请求签名...");
-      const signature = await signer._signTypedData(
-        domain,
-        types,
-        forwardRequest
-      );
-      console.log("✓ 签名获取成功:", signature.slice(0, 20) + "...");
-
-      // 发送到中继器
-      showMessage("发送到X8004中继器...", "info");
-      console.log("📤 发送到中继器:", CONFIG.RELAYER_URL);
-
-      const response = await fetch(CONFIG.RELAYER_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          forwardRequest,
-          signature,
-        }),
-      });
-
-      console.log("📥 响应状态:", response.status);
-      const result = await response.json();
-      console.log("📦 响应结果:", result);
-
-      if (result.success) {
-        const txLink = `https://bscscan.com/tx/${result.txHash}`;
+      if (receipt.status === 1) {
+        const txLink = `https://bscscan.com/tx/${tx.hash}`;
         showMessage(
           `<strong>铸造成功!</strong><br>
                     +8004 BN8004 代币<br>
@@ -383,7 +322,7 @@
           await checkApproval();
         }, 3000);
       } else {
-        showMessage("铸造失败: " + result.error, "error");
+        showMessage("铸造失败: 交易被拒绝", "error");
       }
 
       hideLoading("mintBtn", "步骤2: 铸造");
@@ -396,7 +335,7 @@
       });
 
       if (error.code === 4001) {
-        showMessage("用户取消了签名", "error");
+        showMessage("用户取消了交易", "error");
       } else if (error.message) {
         showMessage("铸造失败: " + error.message, "error");
       } else {
