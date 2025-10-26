@@ -289,7 +289,7 @@
       }
 
       showLoading("mintBtn", "铸造中...");
-      showMessage("准备X402元交易...", "info");
+      showMessage("准备X8004元交易...", "info");
 
       console.log("📝 配置:", {
         TOKEN_ADDRESS: CONFIG.TOKEN_ADDRESS,
@@ -350,7 +350,7 @@
       console.log("✓ 签名获取成功:", signature.slice(0, 20) + "...");
 
       // 发送到中继器
-      showMessage("发送到X402中继器...", "info");
+      showMessage("发送到X8004中继器...", "info");
       console.log("📤 发送到中继器:", CONFIG.RELAYER_URL);
 
       const response = await fetch(CONFIG.RELAYER_URL, {
